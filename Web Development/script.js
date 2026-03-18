@@ -1,4 +1,4 @@
-/* console.log("Daniel")
+console.log("Daniel")
 
 // para informação
 console.info("Informação")
@@ -8,9 +8,9 @@ console.warn("AVISO!")
 
 // para erros
 console.error("Erro!")
- */
 
-/* console.table([
+
+console.table([
     {
         id: 1,
         tarefa: "Study JS",
@@ -19,29 +19,29 @@ console.error("Erro!")
         id: 2,
         tarefa: "Practise Code",
     },
-]); */
+]);
 
-/* console.group("Grupo de logs")
+console.group("Grupo de logs")
 console.log('log 1')
 console.log('log 2')
 console.log('log 3')
-console.groupEnd() */
+console.groupEnd()
 
-/* let casa = ""
+let casa = ""
 console.time("timer")
 if (casa = "casa") {
     console.log("casa")
 }
 
-console.timeEnd("timer") */
-/* 
+console.timeEnd("timer")
+
 var antigo = "Forma antiga de declarar variáveis"
 
 let userName = "Danilo"
 
-const API_URL = "URL" */
+const API_URL = "URL"
 
-/* // para texto
+// para texto
 let texto = "Ola"
 console.log("Nome = " + texto + " Tipo: " + typeof(texto))
 
@@ -68,8 +68,8 @@ console.log(uniqueId)
 
 // para numero grande
 let bigNumero = 45555555555555555n
-console.log("bigNumero = " + bigNumero + " Tipo: " + typeof(bigNumero)) */
-/* 
+console.log("bigNumero = " + bigNumero + " Tipo: " + typeof(bigNumero))
+
 let tasks = [
   {
     id: 1,
@@ -89,7 +89,7 @@ let tasks = [
   },
 ];
 
-console.table(tasks); */
+console.table(tasks);
 
 let hoje = new Date();
 console.log(hoje);
