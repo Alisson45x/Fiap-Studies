@@ -1,103 +1,82 @@
 "use client";
-import { useState } from "react";
-import ContacForms from ".components/ContacForms"
 
-const HomePage = () => {
- 
+import { useEffect, useState } from "react";
+import ContactForm from "./components/ContactForm";
+import ContactList from "./components/ContactList";
+import FilterInput from "./components/FilterInput";
+import { readContacts, filterContacts } from "./lib/contacts.mjs";
+
+export default function HomePage() {
+  const [contacts, setContacts] = useState([]);
+  const [form, setForm] = useState({ nome: "", email: "", telefone: "" });
+  const [filter, setFilter] = useState("");
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [storageError, setStorageError] = useState("");
+
+  useEffect(() => {
+    // O armazenamento só existe no navegador, após a primeira renderização.
+    /* eslint-disable react-hooks/set-state-in-effect */
+    try {
+      setContacts(readContacts(localStorage.getItem("contatos")));
+    } catch {
+      setStorageError("O navegador bloqueou o armazenamento. Os contatos ficam apenas nesta sessão.");
+    }
+    setIsLoaded(true);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, []);
+
+  useEffect(() => {
+    // Evita substituir os dados salvos pela lista vazia inicial.
+    if (!isLoaded) return;
+    try {
+      localStorage.setItem("contatos", JSON.stringify(contacts));
+    } catch {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Informa falha na sincronização com o navegador.
+      setStorageError("Não foi possível salvar. As alterações ficam apenas nesta sessão.");
+    }
+  }, [contacts, isLoaded]);
+
+  function handleChange(event) {
+    const { name, value } = event.target;
+    setForm((current) => ({ ...current, [name]: value }));
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    if (!form.nome.trim() || !isLoaded) return;
+    const contact = { ...form, nome: form.nome.trim(), id: crypto.randomUUID() };
+    setContacts((current) => [...current, contact]);
+    setForm({ nome: "", email: "", telefone: "" });
+  }
+
+  function handleRemove(id) {
+    setContacts((current) => current.filter((contact) => contact.id !== id));
+  }
+
+  const filteredContacts = filterContacts(contacts, filter);
 
   return (
-    <div className="min-h-screen bg-gray-200 p-6">
-      <div className="max-w-3xl mx-auto space-y-6">
-        <header className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Cadastro de Contatos
-          </h1>
-        </header>
-
-        {/* ===== FORMULÁRIO ===== */}
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white shadow rounded p-4 space-y-4"
-        >
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Nome
-            </label>
-            <input
-              name="nome"
-              className="w-full border rounded px-3 py-2 text-gray-900"
-              value={form.nome}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Email
-            </label>
-            <input
-              name="email"
-              type="email"
-              className="w-full border rounded px-3 py-2 text-gray-900"
-              value={form.email}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Telefone
-            </label>
-            <input
-              name="telefone"
-              className="w-full border rounded px-3 py-2 text-gray-900"
-              value={form.telefone}
-              onChange={handleChange}
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-          >
-            Adicionar Contato
-          </button>
-        </form>
-
-        {/* ===== LISTA DE CONTATOS ===== */}
-        <section className="bg-white shadow rounded">
-          <div className="px-4 py-3 border-b">
-            <h2 className="font-medium text-gray-900">
-              Contatos ({contacts.length})
-            </h2>
-          </div>
-          <ul className="divide-y">
-            {contacts.length === 0 ? (
-              <li className="p-4 text-gray-500">Nenhum contato encontrado</li>
-            ) : (
-              contacts.map((c) => (
-                <li key={c.id} className="p-4 flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-gray-900">{c.nome}</p>
-                    <p className="text-sm text-gray-600">
-                      {c.email} • {c.telefone}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handleRemove(c.id)}
-                    className="text-red-600 hover:text-red-700 px-2 py-1 rounded"
-                  >
-                    Excluir
-                  </button>
-                </li>
-              ))
-            )}
-          </ul>
-        </section>
-      </div>
-    </div>
+    <main className="container">
+      <header className="page-header">
+        <p className="eyebrow">Lição 9 · React</p>
+        <h1>Cadastro de contatos</h1>
+        <p>Adicione, encontre e consulte seus contatos em um só lugar.</p>
+      </header>
+      {storageError && <p className="notice" role="alert">{storageError}</p>}
+      <ContactForm form={form} handleChange={handleChange}
+        handleSubmit={handleSubmit} disabled={!isLoaded} />
+      <section className="card" aria-labelledby="contacts-title">
+        <div className="section-heading">
+          <h2 id="contacts-title">Seus contatos</h2>
+          <span className="count" aria-live="polite">{filteredContacts.length} de {contacts.length}</span>
+        </div>
+        <FilterInput value={filter} onChange={setFilter} />
+        {!isLoaded ? <p className="empty-state">Carregando contatos...</p> : (
+          <ContactList contacts={filteredContacts} onRemove={handleRemove}
+            hasFilter={Boolean(filter.trim())} />
+        )}
+      </section>
+      <footer className="page-footer">Os contatos são salvos somente neste navegador.</footer>
+    </main>
   );
-};
-
-export default HomePage;
+}

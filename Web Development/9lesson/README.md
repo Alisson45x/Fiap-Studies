@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lição 9 — Listas, filtros e persistência
 
-## Getting Started
+Projeto de contatos baseado na [aula de React](https://www.curso-webdev.com/?page=react-listas-filtros-deploy).
 
-First, run the development server:
+## Executar
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Dentro de `Web Development/9lesson`:
+
+```powershell
+npm.cmd install
+npm.cmd run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra http://localhost:3000.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Conteúdo aplicado
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Cadastro e exclusão com `useState`.
+- `ContactForm`, `ContactList`, `ContactItem` e `FilterInput` separados.
+- Lista com `map()` e `key` estável pelo ID.
+- Busca por nome ou e-mail com `filter()`, ignorando maiúsculas.
+- Leitura e gravação de `contatos` no `localStorage` com `useEffect`.
+- Controle de carregamento para não apagar os contatos ao abrir a página.
+- Detalhes em `/contact/[id]`, consultando o ID no armazenamento local.
+- CSS puro, responsivo, com labels e foco visível para navegação por teclado.
 
-## Learn More
+Os contatos pertencem a este navegador e endereço. Não são compartilhados entre dispositivos; limpar os dados do site remove a lista. Falhas de armazenamento mostram uma mensagem.
 
-To learn more about Next.js, take a look at the following resources:
+## Verificar
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```powershell
+node --test app/lib/contacts.test.mjs
+npm.cmd run lint
+npm.cmd run build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Teste também: cadastre dois contatos, busque pelo nome e pelo e-mail, abra os detalhes, recarregue, volte e exclua um contato. A exclusão deve continuar após recarregar.
 
-## Deploy on Vercel
+## Publicar na Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Envie as alterações ao seu repositório GitHub quando quiser publicar.
+2. Importe o repositório na Vercel.
+3. Defina **Root Directory** como `Web Development/9lesson`.
+4. Use o preset **Next.js** e o comando de build `npm run build`.
+5. Mantenha o diretório de saída padrão do Next.js e clique em Deploy.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Este projeto mantém as versões instaladas e a rota dinâmica de detalhes. Não usa `output: 'export'` nem diretório `out`, pois os IDs são criados no navegador e não são conhecidos durante o build. A publicação deve usar o suporte nativo a Next.js.
+
+A etapa acima é um guia; este trabalho não publica o site automaticamente.
