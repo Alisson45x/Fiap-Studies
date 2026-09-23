@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import ContactForm from "./components/ContactForm";
 import ContactList from "./components/ContactList";
 import FilterInput from "./components/FilterInput";
@@ -8,7 +8,6 @@ import { readContacts, filterContacts } from "./lib/contacts.mjs";
 
 export default function HomePage() {
   const [contacts, setContacts] = useState([]);
-  const [form, setForm] = useState({ nome: "", email: "", telefone: "" });
   const [filter, setFilter] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const [storageError, setStorageError] = useState("");
@@ -36,24 +35,18 @@ export default function HomePage() {
     }
   }, [contacts, isLoaded]);
 
-  function handleChange(event) {
-    const { name, value } = event.target;
-    setForm((current) => ({ ...current, [name]: value }));
-  }
-
-  function handleSubmit(event) {
-    event.preventDefault();
-    if (!form.nome.trim() || !isLoaded) return;
-    const contact = { ...form, nome: form.nome.trim(), id: crypto.randomUUID() };
-    setContacts((current) => [...current, contact]);
-    setForm({ nome: "", email: "", telefone: "" });
-  }
-
-  function handleRemove(id) {
+  const handleRemove = useCallback((id) => {
     setContacts((current) => current.filter((contact) => contact.id !== id));
-  }
+  }, []);
 
-  const filteredContacts = filterContacts(contacts, filter);
+  const handleFilterChange = useCallback((value) => {
+    setFilter(value);
+  }, []);
+
+  const filteredContacts = useMemo(
+    () => filterContacts(contacts, filter),
+    [contacts, filter]
+  );
 
   return (
     <main className="container">
@@ -63,20 +56,19 @@ export default function HomePage() {
         <p>Adicione, encontre e consulte seus contatos em um só lugar.</p>
       </header>
       {storageError && <p className="notice" role="alert">{storageError}</p>}
-      <ContactForm form={form} handleChange={handleChange}
-        handleSubmit={handleSubmit} disabled={!isLoaded} />
+      <ContactForm setContacts={setContacts} disabled={!isLoaded} />
       <section className="card" aria-labelledby="contacts-title">
         <div className="section-heading">
           <h2 id="contacts-title">Seus contatos</h2>
           <span className="count" aria-live="polite">{filteredContacts.length} de {contacts.length}</span>
         </div>
-        <FilterInput value={filter} onChange={setFilter} />
+        <FilterInput value={filter} onChange={handleFilterChange} />
         {!isLoaded ? <p className="empty-state">Carregando contatos...</p> : (
           <ContactList contacts={filteredContacts} onRemove={handleRemove}
             hasFilter={Boolean(filter.trim())} />
         )}
       </section>
-      <footer className="page-footer">Os contatos são salvos somente neste navegador.</footer>
+      <footer className="page-footer">👍</footer>
     </main>
   );
 }

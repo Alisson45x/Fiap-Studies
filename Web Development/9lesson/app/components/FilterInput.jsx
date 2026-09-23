@@ -1,4 +1,6 @@
-export default function FilterInput({ value, onChange }) {
+import { memo } from "react";
+
+function FilterInput({ value, onChange }) {
   return (
     <div className="field search-field">
       <label htmlFor="filter">Buscar contato</label>
@@ -7,3 +9,5 @@ export default function FilterInput({ value, onChange }) {
     </div>
   );
 }
+
+export default memo(FilterInput);

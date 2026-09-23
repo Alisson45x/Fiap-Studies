@@ -19,7 +19,8 @@ export default function ContactDetailPage() {
       setContact(null);
     }
     setLoading(false);
-    /* eslint-enable react-hooks/set-state-in-effect */
+
+/* eslint-enable react-hooks/set-state-in-effect */
   }, [id]);
 
   return (

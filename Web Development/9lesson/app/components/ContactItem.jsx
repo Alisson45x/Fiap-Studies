@@ -1,6 +1,7 @@
+import { memo } from "react";
 import Link from "next/link";
 
-export default function ContactItem({ contact, onRemove }) {
+function ContactItem({ contact, onRemove }) {
   return (
     <li className="contact-item">
       <div className="contact-info">
@@ -12,3 +13,5 @@ export default function ContactItem({ contact, onRemove }) {
     </li>
   );
 }
+
+export default memo(ContactItem);
